@@ -11,3 +11,68 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+/* App.css */
+.search-label {
+  font-size: 18px;
+  color: #ee0505; /* Exemplo de cor azul */
+  margin-bottom: 10px;
+  margin-left: 3px;
+  border: 7px solid rgba(2, 129, 247, 0.37); /* Define a espessura e cor da borda */
+  border-radius: 5px; /* Define o arredondamento das bordas */
+  padding: 5px 10px; /* Adiciona espaço entre o texto e a borda */
+}
+
+.login-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #343a40;
+  color: white;
+  padding: 20px;
+}
+
+.sidebar h2 {
+  color: #ffc107;
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.sidebar .nav-link {
+  color: white;
+  padding: 10px 15px;
+  display: block;
+  text-decoration: none;
+  font-size: 22px;
+  text-align: left;
+}
+
+.sidebar .nav-link:hover {
+  background-color: #495057;
+  border-radius: 4px;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+
+
+
+
