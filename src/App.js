@@ -7,6 +7,7 @@ import Users from './components/Users';
 import UserCadastrar from './components/UserCadastrar';
 import UserEditar from './components/UserEditar';
 import RetirarFerramenta from './components/RetirarFerramenta';
+import ToolsCadastrar from './components/ToolsCadastrar'; // Importando o componente de cadastrar ferramenta
 
 function App() {
   return (
@@ -27,9 +28,11 @@ function App() {
                 <Link className="nav-link" to="/ferramentas">Ferramentas</Link>
               </li>
               <li className="nav-item">
+                <Link className="nav-link" to="/cadastrarFerramenta">Cadastrar Ferramenta</Link> {/* Novo link */}
+              </li>
+              <li className="nav-item">
                 <Link className="nav-link" to="/assignments">Retirar Ferramenta</Link>
               </li>
-
             </ul>
           </nav>
 
@@ -40,7 +43,8 @@ function App() {
               <Route path="/ferramentas" element={<Tools />} />
               <Route path="/cadastrarUsuario" element={<UserCadastrar />} />
               <Route path="/editarUsuario/:id" element={<UserEditar />} />
-              <Route path="/assignments" element={<RetirarFerramenta />} /> {/* Adicionando a nova rota */}
+              <Route path="/assignments" element={<RetirarFerramenta />} />
+              <Route path="/cadastrarFerramenta" element={<ToolsCadastrar />} /> {/* Nova rota para cadastrar ferramenta */}
             </Routes>
           </div>
         </div>
