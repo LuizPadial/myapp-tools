@@ -145,7 +145,6 @@ const RetirarFerramenta = () => {
             className="form-control"
             value={returnDate}
             onChange={(e) => setReturnDate(e.target.value)}
-            required
           />
         </div>
 

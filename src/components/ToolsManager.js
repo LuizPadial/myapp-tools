@@ -1,5 +1,6 @@
 import React from "react";
-import { Table, Button, Modal, Form, InputGroup, FormControl } from "react-bootstrap";
+import { Table, Button, InputGroup, FormControl } from "react-bootstrap";
+import ToolModal from "./ToolModal"; // Importando o modal separado
 
 class ToolsManager extends React.Component {
   constructor(props) {
@@ -15,7 +16,7 @@ class ToolsManager extends React.Component {
         description: "",
         available: false,
       },
-      toolHistory: null, // Para armazenar o histórico de empréstimos
+      assignmentHistory: [],
     };
   }
 
@@ -26,7 +27,7 @@ class ToolsManager extends React.Component {
   fetchTools = () => {
     const { searchQuery } = this.state;
     let url = "http://localhost:8080/ferramentas";
-
+    
     if (searchQuery) {
       url = `http://localhost:8080/ferramentas/search?query=${searchQuery}`;
     }
@@ -42,11 +43,29 @@ class ToolsManager extends React.Component {
       .catch((error) => console.error("Erro ao carregar ferramentas:", error));
   };
 
-  fetchToolHistory = (toolId) => {
-    fetch(`http://localhost:8080/assignments/${toolId}`)
-      .then((response) => response.json())
-      .then((data) => this.setState({ toolHistory: data }))
-      .catch((error) => console.error("Erro ao carregar histórico de empréstimos:", error));
+  fetchAssignmentHistory = (toolId) => {
+    console.log(`Buscando histórico para a ferramenta com ID: ${toolId}`);
+    fetch(`http://localhost:8080/assignments/ferramentas/${toolId}/historico`) // URL corrigida
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Erro ao carregar histórico de empréstimos");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Dados do histórico:", data);
+        // Aqui, assumimos que `data` é um array de empréstimos
+        this.setState({ assignmentHistory: data });
+      })
+      .catch((error) => console.error("Erro ao carregar histórico:", error));
+  };
+  
+
+
+  handleSearchChange = (event) => {
+    this.setState({ searchQuery: event.target.value }, () => {
+      this.fetchTools();
+    });
   };
 
   openModal = (type, tool = null) => {
@@ -55,16 +74,15 @@ class ToolsManager extends React.Component {
       modalType: type,
       selectedTool: tool,
       formData: tool || { name: "", description: "", available: false },
-      toolHistory: null, // Limpar o histórico ao abrir o modal
     });
 
     if (type === "history" && tool) {
-      this.fetchToolHistory(tool.id); // Buscar histórico quando abrir o modal de histórico
+      this.fetchAssignmentHistory(tool.id); // Buscar histórico
     }
   };
 
   closeModal = () => {
-    this.setState({ showModal: false, selectedTool: null, toolHistory: null });
+    this.setState({ showModal: false, selectedTool: null, assignmentHistory: [] });
   };
 
   handleFormChange = (event) => {
@@ -125,40 +143,25 @@ class ToolsManager extends React.Component {
       .catch((error) => console.error("Erro ao deletar ferramenta:", error));
   };
 
-  getModalTitle = () => {
-    const { modalType, selectedTool } = this.state;
-    if (modalType === "create") return "Cadastrar Ferramenta";
-    if (modalType === "edit") return "Editar Ferramenta";
-    if (modalType === "delete") return "Deletar Ferramenta";
-    if (modalType === "history" && selectedTool) {
-      return `Histórico de Empréstimos - ${selectedTool.name}`;
-    }
-    return "Modal";
-  };
-
   render() {
-    const { tools, showModal, modalType, formData, selectedTool, toolHistory, searchQuery } = this.state;
+    const { tools, showModal, modalType, formData, searchQuery, assignmentHistory, selectedTool } = this.state;
 
     return (
       <div>
         <h1 className="text-center mb-4">Gerenciar Ferramentas</h1>
-
+        
         <InputGroup className="mb-3">
           <FormControl
             placeholder="Buscar por nome ou ID"
             value={searchQuery}
-            onChange={(e) => this.setState({ searchQuery: e.target.value })}
+            onChange={this.handleSearchChange}
           />
-          <Button variant="outline-secondary" onClick={this.fetchTools}>
+          <Button variant="outline-secondary" onClick={() => this.fetchTools()}>
             Buscar
           </Button>
         </InputGroup>
 
-        <Button variant="primary" onClick={() => this.openModal("create")}>
-          Cadastrar Nova Ferramenta
-        </Button>
-
-        <Table striped bordered hover className="mt-4">
+        <Table striped bordered hover>
           <thead>
             <tr>
               <th>ID</th>
@@ -177,24 +180,22 @@ class ToolsManager extends React.Component {
                 <td>{tool.available ? "Sim" : "Não"}</td>
                 <td>
                   <Button
+                    variant="info"
+                    onClick={() => this.openModal("history", tool)}
+                  >
+                    Histórico
+                  </Button>{" "}
+                  <Button
                     variant="warning"
-                    className="me-2"
                     onClick={() => this.openModal("edit", tool)}
                   >
                     Editar
-                  </Button>
+                  </Button>{" "}
                   <Button
                     variant="danger"
                     onClick={() => this.openModal("delete", tool)}
                   >
                     Deletar
-                  </Button>
-                  <Button
-                    variant="info"
-                    className="ms-2"
-                    onClick={() => this.openModal("history", tool)}
-                  >
-                    Ver Histórico
                   </Button>
                 </td>
               </tr>
@@ -202,81 +203,17 @@ class ToolsManager extends React.Component {
           </tbody>
         </Table>
 
-        {/* Modal para criar/editar/deletar ferramenta */}
-        <Modal show={showModal} onHide={this.closeModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>{this.getModalTitle()}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {modalType === "history" && selectedTool ? (
-              <div>
-                <h5>Histórico de Empréstimos</h5>
-                {toolHistory ? (
-                  <div>
-                    <p><strong>ID do Empréstimo:</strong> {toolHistory.id}</p>
-                    <p><strong>Data de Empréstimo:</strong> {new Date(toolHistory.issueDate).toLocaleString()}</p>
-                    <p><strong>Data de Devolução:</strong> {new Date(toolHistory.returnDate).toLocaleString()}</p>
-                    <p><strong>Usuário:</strong> {toolHistory.user.name}</p>
-                  </div>
-                ) : (
-                  <p>Carregando histórico...</p>
-                )}
-              </div>
-            ) : (
-              <Form>
-                <Form.Group controlId="formName">
-                  <Form.Label>Nome</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Nome da ferramenta"
-                    name="name"
-                    value={formData.name}
-                    onChange={this.handleFormChange}
-                  />
-                </Form.Group>
-                <Form.Group controlId="formDescription" className="mt-3">
-                  <Form.Label>Descrição</Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={3}
-                    placeholder="Descrição da ferramenta"
-                    name="description"
-                    value={formData.description}
-                    onChange={this.handleFormChange}
-                  />
-                </Form.Group>
-                <Form.Group controlId="formAvailable" className="mt-3">
-                  <Form.Check
-                    type="checkbox"
-                    label="Disponível"
-                    name="available"
-                    checked={formData.available}
-                    onChange={this.handleFormChange}
-                  />
-                </Form.Group>
-              </Form>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            {modalType === "history" ? (
-              <Button variant="secondary" onClick={this.closeModal}>
-                Fechar
-              </Button>
-            ) : (
-              <>
-                <Button variant="secondary" onClick={this.closeModal}>
-                  Cancelar
-                </Button>
-                <Button
-                  variant={modalType === "delete" ? "danger" : "primary"}
-                  onClick={modalType === "delete" ? this.handleDelete : this.handleSubmit}
-                >
-                  {modalType === "delete" ? "Deletar" : "Salvar"}
-                </Button>
-              </>
-            )}
-          </Modal.Footer>
-        </Modal>
+        <ToolModal
+          show={showModal}
+          modalType={modalType}
+          formData={formData}
+          assignmentHistory={assignmentHistory}
+          onClose={this.closeModal}
+          onSubmit={this.handleSubmit}
+          onDelete={this.handleDelete}
+          onFormChange={this.handleFormChange}
+          selectedTool={selectedTool}
+        />
       </div>
     );
   }
