@@ -2,10 +2,11 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'; // Para customizações de estilo
 
-import Tools from './components/Tools';
+import Tools from './components/ToolsManager';
 import Users from './components/Users';
 import UserCadastrar from './components/UserCadastrar';
 import UserEditar from './components/UserEditar';
+import RetirarFerramenta from './components/RetirarFerramenta';
 
 function App() {
   return (
@@ -25,6 +26,9 @@ function App() {
               <li className="nav-item">
                 <Link className="nav-link" to="/ferramentas">Ferramentas</Link>
               </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/assignments">Retirar Ferramenta</Link>
+              </li>
 
             </ul>
           </nav>
@@ -36,6 +40,7 @@ function App() {
               <Route path="/ferramentas" element={<Tools />} />
               <Route path="/cadastrarUsuario" element={<UserCadastrar />} />
               <Route path="/editarUsuario/:id" element={<UserEditar />} />
+              <Route path="/assignments" element={<RetirarFerramenta />} /> {/* Adicionando a nova rota */}
             </Routes>
           </div>
         </div>
