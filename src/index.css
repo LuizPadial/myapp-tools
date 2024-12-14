@@ -177,5 +177,17 @@ code {
 
 
 
+.logo {
+  width: 200px; /* Ajuste o tamanho da logo conforme necessário */
+  height: auto;
+  margin-right: 10px;
+}
+
+.sidebar h2 {
+  font-size: 1.5rem;
+}
+
+
+
 
 

@@ -10,6 +10,7 @@ import RetirarFerramenta from './components/RetirarFerramenta';
 import ToolsCadastrar from './components/ToolsCadastrar'; // Importando o componente de cadastrar ferramenta
 import DevolverFerramenta from './components/DevolverFerramenta';
 import HistoricoUsuarios from './components/HistoricoUsuarios'; // Importando o componente de Histórico
+import logo from './assets/logo.png'; // Importando a logo
 
 function App() {
   return (
@@ -18,7 +19,10 @@ function App() {
         <div className="dashboard-container">
           {/* Sidebar */}
           <nav className="sidebar">
-            <h2>Tools Manager</h2>
+          <div className="logo-container">
+              <img src={logo} alt="Logo" className="logo" /> {/* Exibindo a logo */}
+              <h2>Tools Manager</h2>
+            </div>
             <ul className="nav flex-column">
               <li className="nav-item">
                 <Link className="nav-link" to="/usuarios">Usuários</Link>
