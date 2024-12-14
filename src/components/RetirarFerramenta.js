@@ -77,14 +77,16 @@ const RetirarFerramenta = () => {
           <label htmlFor="user" className="form-label">
             Usuário:
           </label>
-          <select
+          <input
+            list="userList"
             id="user"
-            className="form-select"
+            className="form-control"
             value={selectedUser}
             onChange={(e) => setSelectedUser(e.target.value)}
+            placeholder="Digite o nome do usuário"
             required
-          >
-            <option value="">Selecione um usuário</option>
+          />
+          <datalist id="userList">
             {users.length > 0 ? (
               users.map((user) => (
                 <option key={user.id} value={user.id}>
@@ -94,21 +96,23 @@ const RetirarFerramenta = () => {
             ) : (
               <option>Carregando...</option>
             )}
-          </select>
+          </datalist>
         </div>
 
         <div className="mb-3">
           <label htmlFor="tool" className="form-label">
             Ferramenta:
           </label>
-          <select
+          <input
+            list="toolList"
             id="tool"
-            className="form-select"
+            className="form-control"
             value={selectedTool}
             onChange={(e) => setSelectedTool(e.target.value)}
+            placeholder="Digite o nome da ferramenta"
             required
-          >
-            <option value="">Selecione uma ferramenta</option>
+          />
+          <datalist id="toolList">
             {tools.length > 0 ? (
               tools.map((tool) => (
                 <option key={tool.id} value={tool.id}>
@@ -118,7 +122,7 @@ const RetirarFerramenta = () => {
             ) : (
               <option>Carregando...</option>
             )}
-          </select>
+          </datalist>
         </div>
 
         <div className="mb-3">

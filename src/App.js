@@ -27,6 +27,9 @@ function App() {
                 <Link className="nav-link" to="/cadastrarUsuario">Cadastrar Usuário</Link>
               </li>
               <li className="nav-item">
+                <Link className="nav-link" to="/historico">Histórico Usuários</Link>
+              </li>
+              <li className="nav-item">
                 <Link className="nav-link" to="/ferramentas">Ferramentas</Link>
               </li>
               <li className="nav-item">
@@ -39,9 +42,6 @@ function App() {
                 <Link className="nav-link" to="/devolver-ferramenta">Devolver Ferramenta</Link>
               </li>
               {/* Link do Histórico de Ferramentas */}
-              <li className="nav-item">
-                <Link className="nav-link" to="/historico">Histórico de Ferramentas</Link>
-              </li>
             </ul>
           </nav>
 

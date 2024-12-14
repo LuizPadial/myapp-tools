@@ -49,7 +49,7 @@ class HistoricoUsuarios extends Component {
 
     return (
       <div>
-        <h2>Histórico de Ferramentas</h2>
+        <h2>Histórico Usuários</h2>
 
         {/* Campo para digitar o ID do usuário */}
         <Form.Group controlId="formUserId">
