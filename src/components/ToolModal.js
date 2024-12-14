@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 
 const ToolModal = ({
@@ -12,6 +12,8 @@ const ToolModal = ({
   onFormChange,
   selectedTool
 }) => {
+  const [returnDate, setReturnDate] = useState(""); // Estado para armazenar a data de devolução
+
   const getModalTitle = () => {
     if (modalType === "create") return "Cadastrar Ferramenta";
     if (modalType === "edit") return "Editar Ferramenta";
@@ -20,6 +22,10 @@ const ToolModal = ({
       return `Histórico de Empréstimos - ${selectedTool.name}`;
     }
     return "Modal";
+  };
+
+  const handleReturnDateChange = (e) => {
+    setReturnDate(e.target.value);  // Atualiza o estado da data de devolução
   };
 
   return (
@@ -39,10 +45,21 @@ const ToolModal = ({
                     <strong>Usuário:</strong> {assignment.user.name} <br />
                     <strong>Ferramenta:</strong> {assignment.tools.name} <br />
                     <strong>Data de Empréstimo:</strong> {new Date(assignment.issueDate).toLocaleString()} <br />
-                    <strong>Data de Devolução:</strong> 
-                    {assignment.returnDate 
-                        ? new Date(assignment.returnDate).toLocaleString() 
-                        : "Aguardando devolução"} <br />
+                    <strong>Data de Devolução:</strong>
+                    {assignment.returnDate
+                      ? new Date(assignment.returnDate).toLocaleString()
+                      : "Aguardando devolução"} <br />
+                    {/* Campo de data para atualização */}
+                    {/* {!assignment.returnDate && (
+                      <Form.Group controlId="formReturnDate" className="mt-3">
+                        <Form.Label>Data de Devolução</Form.Label>
+                        <Form.Control
+                          type="datetime-local"
+                          value={returnDate || ""}
+                          onChange={handleReturnDateChange}  // Atualiza o estado com a nova data
+                        />
+                      </Form.Group>
+                    )} */}
                   </li>
                 ))}
               </ul>
@@ -81,7 +98,11 @@ const ToolModal = ({
         )}
       </Modal.Body>
       <Modal.Footer>
-        {modalType === "delete" ? (
+        {modalType === "history" ? (
+          <Button variant="secondary" onClick={onClose}>
+            Fechar
+          </Button>
+        ) : modalType === "delete" ? (
           <>
             <Button variant="secondary" onClick={onClose}>
               Cancelar
@@ -95,12 +116,16 @@ const ToolModal = ({
             <Button variant="secondary" onClick={onClose}>
               Fechar
             </Button>
-            <Button variant="success" onClick={onSubmit}>
+            <Button
+              variant="success"
+              onClick={() => onSubmit(returnDate)} // Passando a data de devolução para o onSubmit
+            >
               Salvar
             </Button>
           </>
         )}
       </Modal.Footer>
+
     </Modal>
   );
 };

@@ -25,7 +25,7 @@ class ToolsManager extends React.Component {
     const url = searchQuery
       ? `http://localhost:8080/ferramentas/search?query=${searchQuery}`
       : "http://localhost:8080/ferramentas";
-    
+
     fetch(url)
       .then((response) => response.json())
       .then((data) => this.setState({ tools: Array.isArray(data) ? data : [] }))
@@ -61,6 +61,7 @@ class ToolsManager extends React.Component {
     this.setState({ showModal: false, selectedTool: null, assignmentHistory: [] });
   };
 
+
   handleFormChange = (event) => {
     const { name, value, type, checked } = event.target;
     this.setState((prevState) => ({
@@ -70,9 +71,10 @@ class ToolsManager extends React.Component {
       },
     }));
   };
+
   handleUpdateTool = () => {
     const { formData, selectedTool } = this.state;
-  
+
     // Envia uma requisição PUT para atualizar a ferramenta
     fetch(`http://localhost:8080/ferramentas/${selectedTool.id}`, {
       method: "PUT",
@@ -101,24 +103,24 @@ class ToolsManager extends React.Component {
         alert("Erro ao atualizar a ferramenta.");
       });
   };
-  
+
 
   handleSubmit = () => {
     const { selectedTool, modalType } = this.state;
-  
+
     // Verifica se o tipo do modal é 'edit' e chama a função de atualização
     if (modalType === "edit") {
       this.handleUpdateTool();  // Chama a função de atualização da ferramenta
     } else if (modalType === "history" && selectedTool && selectedTool.currentAssignment) {
       // URL para atualizar a data de devolução
-      const returnDateUrl = `http://localhost:8080/assignments/${selectedTool.currentAssignment.id}/returnData`; 
+      const returnDateUrl = `http://localhost:8080/assignments/${selectedTool.currentAssignment.id}/returnData`;
       const returnDateMethod = "PUT";
-  
-      // A data de devolução (pode ser atual ou qualquer data desejada)
-      const returnDate = new Date().toISOString();
-      
+
+      // A data de devolução (converte para o formato correto para o backend)
+      const returnDate = new Date().toISOString().slice(0, 19);  // Exemplo: 2024-12-14T01:30:00
+
       console.log("Enviando dados para a API:", { returnDate });
-  
+
       // Requisição para atualizar a data de devolução
       fetch(returnDateUrl, {
         method: returnDateMethod,
@@ -129,18 +131,18 @@ class ToolsManager extends React.Component {
       })
         .then((response) => {
           if (!response.ok) {
-            throw new Error("Erro ao atualizar a data de devolução");
+            throw new Error(`Erro ao atualizar a data de devolução: ${response.status}`);
           }
           return response.json();
         })
         .then((data) => {
           console.log("Resposta do servidor (data de devolução):", data);
-  
+
           // Requisição para atualizar a disponibilidade da ferramenta
           const toolId = selectedTool.id;
           const updatedAvailability = { available: true }; // Marca a ferramenta como disponível após devolução
           const availabilityUrl = `http://localhost:8080/ferramentas/status/${toolId}`;
-  
+
           return fetch(availabilityUrl, {
             method: "PUT",
             headers: {
@@ -151,7 +153,7 @@ class ToolsManager extends React.Component {
         })
         .then((response) => {
           if (!response.ok) {
-            throw new Error("Erro ao atualizar a disponibilidade da ferramenta");
+            throw new Error(`Erro ao atualizar a disponibilidade da ferramenta: ${response.status}`);
           }
           return response.json();
         })
@@ -162,18 +164,15 @@ class ToolsManager extends React.Component {
         })
         .catch((error) => {
           console.error("Erro:", error);
-          alert("Erro ao salvar ferramenta.");
+          alert(`Erro ao salvar: ${error.message}`);
         });
     }
   };
-  
-  
-  
 
   handleToggleAvailability = (toolId, available) => {
     const updatedAvailability = { available: !available };
     const url = `http://localhost:8080/ferramentas/status/${toolId}`;
-    
+
     fetch(url, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -206,25 +205,6 @@ class ToolsManager extends React.Component {
       .catch((error) => console.error("Erro ao deletar ferramenta:", error));
   };
 
-      handleReturnTool = (toolId) => {
-        const url = `http://localhost:8080/assignments/${toolId}/returnData`;
-        console.log(`Fazendo PUT para: ${url}`);  // Adicione esse log para verificar a URL
-        fetch(url, {
-          method: "PUT",
-        })
-          .then((response) => {
-            if (response.ok) {
-              this.fetchTools();  // Atualiza a lista de ferramentas
-            } else {
-              alert("Erro ao registrar devolução da ferramenta.");
-            }
-          })
-          .catch((error) => console.error("Erro ao registrar devolução:", error));
-      };
-  
-  
-        
-
   render() {
     const { tools, showModal, modalType, formData, searchQuery, assignmentHistory, selectedTool } = this.state;
 
@@ -242,7 +222,6 @@ class ToolsManager extends React.Component {
             Buscar
           </Button>
         </InputGroup>
-
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -263,10 +242,19 @@ class ToolsManager extends React.Component {
                 <td>
                   <Button
                     variant={tool.available ? "warning" : "success"}
-                    onClick={() => this.handleToggleAvailability(tool.id, tool.available)}
+                    onClick={() => {
+                      const confirmChange = window.confirm(
+                        `Tem certeza que deseja ${tool.available ? "marcar como indisponível" : "marcar como disponível"}?`
+                      );
+
+                      if (confirmChange) {
+                        this.handleToggleAvailability(tool.id, tool.available);
+                      }
+                    }}
                   >
                     {tool.available ? "Marcar como indisponível" : "Marcar como disponível"}
-                  </Button>{" "}
+                  </Button>
+
                   <Button
                     variant="info"
                     onClick={() => this.openModal("history", tool)}

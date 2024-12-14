@@ -8,6 +8,8 @@ import UserCadastrar from './components/UserCadastrar';
 import UserEditar from './components/UserEditar';
 import RetirarFerramenta from './components/RetirarFerramenta';
 import ToolsCadastrar from './components/ToolsCadastrar'; // Importando o componente de cadastrar ferramenta
+import DevolverFerramenta from './components/DevolverFerramenta';
+import HistoricoUsuarios from './components/HistoricoUsuarios'; // Importando o componente de Histórico
 
 function App() {
   return (
@@ -28,10 +30,17 @@ function App() {
                 <Link className="nav-link" to="/ferramentas">Ferramentas</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/cadastrarFerramenta">Cadastrar Ferramenta</Link> {/* Novo link */}
+                <Link className="nav-link" to="/cadastrarFerramenta">Cadastrar Ferramenta</Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link" to="/assignments">Retirar Ferramenta</Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/devolver-ferramenta">Devolver Ferramenta</Link>
+              </li>
+              {/* Link do Histórico de Ferramentas */}
+              <li className="nav-item">
+                <Link className="nav-link" to="/historico">Histórico de Ferramentas</Link>
               </li>
             </ul>
           </nav>
@@ -44,7 +53,10 @@ function App() {
               <Route path="/cadastrarUsuario" element={<UserCadastrar />} />
               <Route path="/editarUsuario/:id" element={<UserEditar />} />
               <Route path="/assignments" element={<RetirarFerramenta />} />
-              <Route path="/cadastrarFerramenta" element={<ToolsCadastrar />} /> {/* Nova rota para cadastrar ferramenta */}
+              <Route path="/cadastrarFerramenta" element={<ToolsCadastrar />} />
+              <Route path="/devolver-ferramenta" element={<DevolverFerramenta />} />
+              {/* Rota para Histórico de Ferramentas */}
+              <Route path="/historico" element={<HistoricoUsuarios />} />
             </Routes>
           </div>
         </div>
